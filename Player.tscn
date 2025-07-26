@@ -1,0 +1,30 @@
+[gd_scene load_steps=4 format=3 uid="uid://di2ky6xa152e5"]
+
+[ext_resource type="Script" uid="uid://cqtaet52wlmlm" path="res://CharacterBody2d.cs" id="1_xhfnw"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_0rwas"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_xhfnw"]
+height = 40.0
+
+[node name="Player" type="Node2D"]
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+scale = Vector2(3.5, 3.5)
+script = ExtResource("1_xhfnw")
+speed = 900.0
+jumpPower = -850.0
+drag = 0.08
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="CharacterBody2D"]
+position = Vector2(-4.76837e-07, 2.86102e-06)
+scale = Vector2(20.0227, 20)
+mesh = SubResource("CapsuleMesh_0rwas")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+shape = SubResource("CapsuleShape2D_xhfnw")
+
+[node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
+scale = Vector2(0.285714, 0.285714)
+position_smoothing_enabled = true
+position_smoothing_speed = 10.0
