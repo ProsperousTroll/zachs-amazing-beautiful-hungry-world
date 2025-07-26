@@ -30,7 +30,9 @@ public partial class CharacterBody2d : CharacterBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (Globals.STATE == Globals.PLRSTATES.IDLE && Globals.inDir() != 0)
+		
+		// Ground movement
+		if (Globals.inDir() != 0)
 		{
 			Globals.STATE = Globals.PLRSTATES.WALKING;
 			vel.X = Mathf.Lerp(vel.X, (Globals.inDir() * speed), accel);
@@ -41,19 +43,20 @@ public partial class CharacterBody2d : CharacterBody2D
 			vel.X = Mathf.Lerp(vel.X, 0.0F, friction);
 		}
 
+		// Plip
+		if (Input.IsActionPressed("Down"))
+			Globals.STATE = Globals.PLRSTATES.CRUMP;
 
+
+		// Jumping
 		if (!IsOnFloor())
 		{
 		Globals.STATE = Globals.PLRSTATES.INAIR;
 		vel.Y += gravity * (float)delta;
 		vel.X = Mathf.Lerp(vel.X, Globals.inDir() * speed, drag);
 		}
-		else
-		{
-			Globals.STATE = Globals.PLRSTATES.IDLE;
-		}
 		
-		if (IsOnFloor() && Input.IsActionPressed("Jump"))
+		if (IsOnFloor() && Input.IsActionJustPressed("Jump"))
 		{
 			vel.Y = jumpPower;
 		}

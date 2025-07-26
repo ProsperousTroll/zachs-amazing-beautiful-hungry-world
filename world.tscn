@@ -8,6 +8,7 @@
 
 [node name="Globals" type="Node" parent="."]
 script = ExtResource("1_tlwt5")
+STATE = 1
 
 [node name="Player" parent="." instance=ExtResource("1_f3sb7")]
 
