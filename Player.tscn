@@ -79,11 +79,13 @@ height = 39.4286
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
 scale = Vector2(3.5, 3.5)
 slide_on_ceiling = false
+floor_constant_speed = true
+floor_block_on_wall = false
 script = ExtResource("1_xhfnw")
-speed = 900.0
 accel = 0.15
 jumpPower = -850.0
-drag = 0.02
+drag = 0.06
+crumpSpeed = 1.9
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D"]
 scale = Vector2(0.077, 0.077)
@@ -98,4 +100,4 @@ shape = SubResource("CapsuleShape2D_xhfnw")
 scale = Vector2(0.285714, 0.285714)
 zoom = Vector2(1.2, 1.2)
 position_smoothing_enabled = true
-position_smoothing_speed = 15.0
+position_smoothing_speed = 9.0

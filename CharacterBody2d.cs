@@ -16,6 +16,12 @@ public partial class CharacterBody2d : CharacterBody2D
 	public float jumpPower = -800;
 	[Export]
 	public float drag = 0.005F;
+	[Export]
+	
+	// Multipliers for special 'crump' move
+	public float crumpSpeed = 1.7F;
+	[Export]
+	public float crumpHeight = 0.7F;
 	
 
 	
@@ -59,7 +65,7 @@ public partial class CharacterBody2d : CharacterBody2D
 	{
 		
 		playerStates();
-		GD.Print(Globals.STATE);
+		GD.Print(Velocity.X + Velocity.Y);
 		
 		// Gravity / jumping
 		if (Input.IsActionJustPressed("Jump"))
@@ -70,7 +76,7 @@ public partial class CharacterBody2d : CharacterBody2D
 			}
 			else if (Globals.STATE == Globals.PLRSTATES.CRUMP && IsOnFloor())
 			{
-				vel.Y = jumpPower * 0.7F;
+				vel.Y = jumpPower * crumpHeight;
 			}
 		}
 
@@ -78,16 +84,20 @@ public partial class CharacterBody2d : CharacterBody2D
 		// Movement depending on player state
 		switch((int)Globals.STATE)
 		{
+			// IDLE
 			case 0:
 				vel.X = Mathf.Lerp(vel.X, 0.0F, friction);
 				break;
+			// WALKING
 			case 1:
 				vel.X = Mathf.Lerp(vel.X, (Globals.inDir() * speed), accel);
 				break;
+			// INAIR
 			case 2:
 				vel.Y += gravity * (float)delta;
 				vel.X = Mathf.Lerp(vel.X, Globals.inDir() * speed, drag);
 				break; 
+			// CRUMP
 			case 3:
 				if (Velocity.Y < 0)
 				{
@@ -100,7 +110,10 @@ public partial class CharacterBody2d : CharacterBody2D
 				if (IsOnFloor())
 				{
 					vel.X = Mathf.Lerp(vel.X, 0.0F, friction);
-				} else vel.X = Mathf.Lerp(vel.X, Globals.inDir() * (speed * 2F), accel);
+				} else vel.X = Mathf.Lerp(vel.X, Globals.inDir() * (speed * crumpSpeed), accel);
+				break;
+			// PLIP
+			case 4:
 				break;
 		}
 		
