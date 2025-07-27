@@ -13,5 +13,5 @@ STATE = 1
 [node name="Player" parent="." instance=ExtResource("1_f3sb7")]
 
 [node name="Tilemap" parent="." instance=ExtResource("2_fj7yv")]
-position = Vector2(-2500, 500)
-scale = Vector2(10, 10)
+position = Vector2(-2469, 500)
+scale = Vector2(2, 2)

@@ -38,28 +38,27 @@ public partial class Animation : AnimatedSprite2D
 	{
 		
 		FlipH = (bool)lookDir();
-
 		
-		if (Globals.STATE == Globals.PLRSTATES.INAIR)
+		switch((int)Globals.STATE)
 		{
-			if (Char.Velocity.Y < 0)
-			{
-				Play("AIR_UP");
-			} else Play("AIR_DOWN");
-		}
-		else
-		{
-			if (Globals.STATE == Globals.PLRSTATES.IDLE)
-			{
+			case 0:
 				Play("IDLE");
-			} else if (Globals.STATE == Globals.PLRSTATES.WALKING)
-			{
+				break;
+			case 1:
 				Play("WALKING");
-			}
-			else if (Globals.STATE == Globals.PLRSTATES.CRUMP)
-			{
+				break;
+			case 2:
+				if (Char.Velocity.Y < 0)
+				{
+					Play("AIR_UP");
+				} else Play ("AIR_DOWN");
+				break;
+			case 3:
 				Play("CRUMP");
-			}
+				break;
+			case 4:
+				Play("PLIP");
+				break;
 		}
 	}
 }

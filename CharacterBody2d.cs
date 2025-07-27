@@ -22,15 +22,89 @@ public partial class CharacterBody2d : CharacterBody2D
 	private Vector2 vel = Vector2.Zero;
 	private Globals Globals;
 	
+	private void playerStates()
+	{
+		if (!IsOnFloor())
+		{
+			Globals.STATE = Globals.PLRSTATES.INAIR;
+		}
+		else if (IsOnFloor() && Globals.inDir() == 0)
+		{
+			Globals.STATE = Globals.PLRSTATES.IDLE;
+		}
+		else if (Globals.inDir() != 0)
+		{
+			Globals.STATE = Globals.PLRSTATES.WALKING;
+		}
 
+		if (Input.IsActionPressed("Down"))
+		{
+			Globals.STATE = Globals.PLRSTATES.CRUMP;
+		}
+		else if (Input.IsActionPressed("Up"))
+		{
+			Globals.STATE = Globals.PLRSTATES.PLIP;
+		}
+	}
+	
+	
 	public override void _Ready()
 	{
 		Globals = GetNode<Globals>("/root/World/Globals");
 	}
 
+
+
 	public override void _PhysicsProcess(double delta)
 	{
 		
+		playerStates();
+		GD.Print(Globals.STATE);
+		
+		// Gravity / jumping
+		if (Input.IsActionJustPressed("Jump"))
+		{
+			if (Globals.STATE == Globals.PLRSTATES.IDLE || Globals.STATE == Globals.PLRSTATES.WALKING)
+			{
+				vel.Y = jumpPower;
+			}
+			else if (Globals.STATE == Globals.PLRSTATES.CRUMP && IsOnFloor())
+			{
+				vel.Y = jumpPower * 0.7F;
+			}
+		}
+
+		
+		// Movement depending on player state
+		switch((int)Globals.STATE)
+		{
+			case 0:
+				vel.X = Mathf.Lerp(vel.X, 0.0F, friction);
+				break;
+			case 1:
+				vel.X = Mathf.Lerp(vel.X, (Globals.inDir() * speed), accel);
+				break;
+			case 2:
+				vel.Y += gravity * (float)delta;
+				vel.X = Mathf.Lerp(vel.X, Globals.inDir() * speed, drag);
+				break; 
+			case 3:
+				if (Velocity.Y < 0)
+				{
+					vel.Y += gravity * (float)delta;
+				}
+				else
+				{
+					vel.Y += (gravity * 2) * (float)delta;
+				}
+				if (IsOnFloor())
+				{
+					vel.X = Mathf.Lerp(vel.X, 0.0F, friction);
+				} else vel.X = Mathf.Lerp(vel.X, Globals.inDir() * (speed * 2F), accel);
+				break;
+		}
+		
+		/*
 		// Ground movement
 		if (Globals.inDir() != 0)
 		{
@@ -60,6 +134,7 @@ public partial class CharacterBody2d : CharacterBody2D
 		{
 			vel.Y = jumpPower;
 		}
+		*/
 		
 		Velocity = vel;
 		MoveAndSlide();
