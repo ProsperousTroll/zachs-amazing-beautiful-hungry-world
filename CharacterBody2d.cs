@@ -4,6 +4,7 @@ using System;
 public partial class CharacterBody2d : CharacterBody2D
 {
 	
+	// General movement 
 	[Export]
 	public float gravity = 1800;
 	[Export]
@@ -16,138 +17,142 @@ public partial class CharacterBody2d : CharacterBody2D
 	public float jumpPower = -800;
 	[Export]
 	public float drag = 0.005F;
-	[Export]
 	
 	// Multipliers for special 'crump' move
-	public float crumpSpeed = 1.7F;
 	[Export]
-	public float crumpHeight = 0.7F;
+	public float crumpSpeed = 1.8F;
+	[Export]
+	public float crumpHeight = 0.5F;
 	
-
+	// Multipliers for special 'plip' move
+	[Export]
+	public float plipSpeed = 0.5F;
+	[Export]
+	public float plipHeight = 1.5F;
 	
+	// Private variables 
 	private Vector2 vel = Vector2.Zero;
+	private Vector2 multipliers = Vector2.Zero;
 	private Globals Globals;
 	
+	private void Multipliers()
+	{
+		if(Globals.Crump == true)	
+		{
+			multipliers.X = crumpSpeed;
+			multipliers.Y = crumpHeight; 
+			drag = 0.5F;
+		}
+		else if(Globals.Plip == true)
+		{
+			multipliers.X = plipSpeed;
+			multipliers.Y = plipHeight;
+			drag = 0.05F;
+		}
+		else
+		{
+			multipliers.X = 1.0F;
+			multipliers.Y = 1.0F;
+			drag = 0.02F;
+		} 
+	}
+	
+
 	private void playerStates()
 	{
+		
 		if (!IsOnFloor())
 		{
-			Globals.STATE = Globals.PLRSTATES.INAIR;
+			Globals.changeState(ref Globals.STATE, "INAIR");
 		}
 		else if (IsOnFloor() && Globals.inDir() == 0)
 		{
-			Globals.STATE = Globals.PLRSTATES.IDLE;
+			Globals.changeState(ref Globals.STATE, "IDLE");
+			Globals.Crump = false;
+			Globals.Plip = false;
 		}
-		else if (Globals.inDir() != 0)
+		else
 		{
-			Globals.STATE = Globals.PLRSTATES.WALKING;
+			Globals.changeState(ref Globals.STATE, "WALKING");
+			Globals.Crump = false;
+			Globals.Plip = false;
 		}
 
-		if (Input.IsActionPressed("Down"))
+		if (Input.IsActionPressed("Down") && IsOnFloor())
 		{
-			Globals.STATE = Globals.PLRSTATES.CRUMP;
+			Globals.changeState(ref Globals.STATE, "CRUMP");
+			Globals.Crump = true;
 		}
-		else if (Input.IsActionPressed("Up"))
+		else if (Input.IsActionPressed("Up") && IsOnFloor())
 		{
-			Globals.STATE = Globals.PLRSTATES.PLIP;
+			Globals.changeState(ref Globals.STATE, "PLIP");
+			Globals.Plip = true;
 		}
+
 	}
 	
+	/////////////
+	/// READY ///
+	/////////////
 	
 	public override void _Ready()
 	{
 		Globals = GetNode<Globals>("/root/World/Globals");
 	}
-
-
-
+	
+	///////////////////////
+	/// PHYSICS PROCESS ///
+	///////////////////////
+	
 	public override void _PhysicsProcess(double delta)
 	{
-		
 		playerStates();
-		GD.Print(Velocity.X + Velocity.Y);
+		Multipliers();
+
+		GD.Print(Globals.STATE);
 		
-		// Gravity / jumping
+		// Fix fast fall bug. Wouldn't want this here normally. 
+		if (IsOnFloor())
+		{
+			vel.Y = 0;
+		}
+
 		if (Input.IsActionJustPressed("Jump"))
 		{
-			if (Globals.STATE == Globals.PLRSTATES.IDLE || Globals.STATE == Globals.PLRSTATES.WALKING)
+			if (IsOnFloor())
 			{
-				vel.Y = jumpPower;
+				vel.Y = jumpPower * multipliers.Y;
 			}
-			else if (Globals.STATE == Globals.PLRSTATES.CRUMP && IsOnFloor())
-			{
-				vel.Y = jumpPower * crumpHeight;
-			}
+			
 		}
 
 		
-		// Movement depending on player state
-		switch((int)Globals.STATE)
+		switch(Globals.STATE)
 		{
-			// IDLE
-			case 0:
+			case Globals.PLRSTATES.IDLE:
 				vel.X = Mathf.Lerp(vel.X, 0.0F, friction);
 				break;
-			// WALKING
-			case 1:
+			case Globals.PLRSTATES.WALKING:
 				vel.X = Mathf.Lerp(vel.X, (Globals.inDir() * speed), accel);
 				break;
-			// INAIR
-			case 2:
+			case Globals.PLRSTATES.INAIR:
+				// I don't *WANT* this here
+				if (IsOnCeiling())
+				{
+					vel.Y = 0;
+				}
+				// I thought the engine would do this for me ^
 				vel.Y += gravity * (float)delta;
-				vel.X = Mathf.Lerp(vel.X, Globals.inDir() * speed, drag);
+				vel.Y = Math.Clamp(vel.Y, -gravity, gravity);
+				vel.X = Mathf.Lerp(vel.X, Globals.inDir() * (speed * multipliers.X), drag);
 				break; 
-			// CRUMP
-			case 3:
-				if (Velocity.Y < 0)
-				{
-					vel.Y += gravity * (float)delta;
-				}
-				else
-				{
-					vel.Y += (gravity * 2) * (float)delta;
-				}
-				if (IsOnFloor())
-				{
-					vel.X = Mathf.Lerp(vel.X, 0.0F, friction);
-				} else vel.X = Mathf.Lerp(vel.X, Globals.inDir() * (speed * crumpSpeed), accel);
+			case Globals.PLRSTATES.CRUMP:
+				vel.X = Mathf.Lerp(vel.X, 0.0F, friction);
 				break;
-			// PLIP
-			case 4:
+			case Globals.PLRSTATES.PLIP:
+				vel.X = Mathf.Lerp(vel.X, 0.0F, friction);
 				break;
-		}
-		
-		/*
-		// Ground movement
-		if (Globals.inDir() != 0)
-		{
-			Globals.STATE = Globals.PLRSTATES.WALKING;
-			vel.X = Mathf.Lerp(vel.X, (Globals.inDir() * speed), accel);
-		}
-		else if (IsOnFloor())
-		{
-			Globals.STATE = Globals.PLRSTATES.IDLE;
-			vel.X = Mathf.Lerp(vel.X, 0.0F, friction);
-		}
-
-		// Plip
-		if (Input.IsActionPressed("Down"))
-			Globals.STATE = Globals.PLRSTATES.CRUMP;
-
-
-		// Jumping
-		if (!IsOnFloor())
-		{
-		Globals.STATE = Globals.PLRSTATES.INAIR;
-		vel.Y += gravity * (float)delta;
-		vel.X = Mathf.Lerp(vel.X, Globals.inDir() * speed, drag);
-		}
-		
-		if (IsOnFloor() && Input.IsActionJustPressed("Jump"))
-		{
-			vel.Y = jumpPower;
-		}
-		*/
+ 		}
 		
 		Velocity = vel;
 		MoveAndSlide();

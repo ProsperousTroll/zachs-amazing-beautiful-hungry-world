@@ -37,26 +37,29 @@ public partial class Animation : AnimatedSprite2D
 	public override void _PhysicsProcess(double delta)
 	{
 		
-		FlipH = (bool)lookDir();
+		FlipH = lookDir();
+
+		// Lean in direction you're moving. Holy magic numbers.  
+		RotationDegrees = Mathf.Lerp(Globals.inDir(), Char.Velocity.X / 60F, 0.3F);
 		
-		switch((int)Globals.STATE)
+		switch(Globals.STATE)
 		{
-			case 0:
+			case Globals.PLRSTATES.IDLE:
 				Play("IDLE");
 				break;
-			case 1:
+			case Globals.PLRSTATES.WALKING:
 				Play("WALKING");
 				break;
-			case 2:
+			case Globals.PLRSTATES.INAIR:
 				if (Char.Velocity.Y < 0)
 				{
 					Play("AIR_UP");
 				} else Play ("AIR_DOWN");
 				break;
-			case 3:
+			case Globals.PLRSTATES.CRUMP:
 				Play("CRUMP");
 				break;
-			case 4:
+			case Globals.PLRSTATES.PLIP:
 				Play("PLIP");
 				break;
 		}

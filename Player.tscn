@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://di2ky6xa152e5"]
+[gd_scene load_steps=18 format=3 uid="uid://di2ky6xa152e5"]
 
 [ext_resource type="Script" uid="uid://cqtaet52wlmlm" path="res://CharacterBody2d.cs" id="1_xhfnw"]
 [ext_resource type="Texture2D" uid="uid://b8i0avc1fr6in" path="res://SPRITES/CHAR/charAir.png" id="2_dtqjt"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://bxnxmswkg6o4s" path="res://SPRITES/CHAR/charCrouch.png" id="4_5ncpa"]
 [ext_resource type="Texture2D" uid="uid://dpanhi00wcoq4" path="res://SPRITES/CHAR/charStep2.png" id="4_tdg3f"]
 [ext_resource type="Texture2D" uid="uid://dvakdr2j13qne" path="res://SPRITES/CHAR/charUp.png" id="6_wi0c6"]
+[ext_resource type="Script" uid="uid://cyy8t1wxylh4q" path="res://AnimationPlayer.cs" id="10_hp6x6"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_kne1u"]
 animations = [{
@@ -34,6 +35,14 @@ animations = [{
 }],
 "loop": true,
 "name": &"CRUMP",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_dtqjt")
+}],
+"loop": true,
+"name": &"FLIP",
 "speed": 5.0
 }, {
 "frames": [{
@@ -70,6 +79,89 @@ animations = [{
 "speed": 10.0
 }]
 
+[sub_resource type="Animation" id="Animation_3tkgg"]
+resource_name = "Flip"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(0.196146, 2),
+"update": 0,
+"values": [0.0, 6.28319]
+}
+
+[sub_resource type="Animation" id="Animation_l6ohk"]
+resource_name = "FlipL"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(0.196146, 2),
+"update": 0,
+"values": [0.0, -6.28319]
+}
+
+[sub_resource type="Animation" id="Animation_wi0c6"]
+resource_name = "Jump"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0666667, 0.2, 0.5),
+"transitions": PackedFloat32Array(0.116629, 0.15932, 0.31864, 7.21),
+"update": 0,
+"values": [Vector2(0.077, 0.077), Vector2(0.207, 0.037), Vector2(0.039, 0.115), Vector2(0.077, 0.077)]
+}
+
+[sub_resource type="Animation" id="Animation_hp6x6"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.077, 0.077)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_3tkgg"]
+_data = {
+&"Flip": SubResource("Animation_3tkgg"),
+&"FlipL": SubResource("Animation_l6ohk"),
+&"Jump": SubResource("Animation_wi0c6"),
+&"RESET": SubResource("Animation_hp6x6")
+}
+
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_xhfnw"]
 radius = 6.0
 height = 39.4286
@@ -81,17 +173,27 @@ scale = Vector2(3.5, 3.5)
 slide_on_ceiling = false
 floor_constant_speed = true
 floor_block_on_wall = false
+floor_snap_length = 25.0
 script = ExtResource("1_xhfnw")
+gravity = 2000.0
 accel = 0.15
 jumpPower = -850.0
-drag = 0.06
-crumpSpeed = 1.9
+drag = 0.02
+plipHeight = 1.8
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D"]
+position = Vector2(0, 17.5)
 scale = Vector2(0.077, 0.077)
 sprite_frames = SubResource("SpriteFrames_kne1u")
-animation = &"PLIP"
+animation = &"FLIP"
+offset = Vector2(0, -220)
 script = ExtResource("3_kne1u")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CharacterBody2D"]
+libraries = {
+&"": SubResource("AnimationLibrary_3tkgg")
+}
+script = ExtResource("10_hp6x6")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
 shape = SubResource("CapsuleShape2D_xhfnw")

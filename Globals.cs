@@ -16,6 +16,8 @@ public partial class Globals : Node
 	[Export]
 	public PLRSTATES STATE;
 
+	public bool Plip = false;
+	public bool Crump = false;
 
 	public float inDir()
 	{
@@ -26,13 +28,30 @@ public partial class Globals : Node
 		}
 		else if (Input.IsActionPressed("Right"))
 		{
-			dir = 1;
+			dir += 1;
 		}
 		else if (Input.IsActionPressed("Left"))
 		{
-			dir = -1;
+			dir -= 1;
 		}
 		return dir;
+	}
+	
+	// Helper functions because I'm a lazy ######
+	
+	public void changeState(ref PLRSTATES currentState, string requestedState)
+	{
+		Enum.TryParse<PLRSTATES>(requestedState, out var value);
+		currentState = value; 
+	}
+	
+	public override void _PhysicsProcess(double delta)
+	{
+		// RESTART GAME //
+		if(Input.IsActionJustPressed("ui_cancel"))
+		{
+			GetTree().CallDeferred("reload_current_scene");
+		}
 	}
 	
 }
