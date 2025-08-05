@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://d3kvf7irpwye6"]
+[gd_scene load_steps=6 format=3 uid="uid://d3kvf7irpwye6"]
 
 [ext_resource type="PackedScene" uid="uid://di2ky6xa152e5" path="res://Player.tscn" id="1_f3sb7"]
 [ext_resource type="Script" uid="uid://d07bcslojj25r" path="res://Globals.cs" id="1_tlwt5"]
 [ext_resource type="Texture2D" uid="uid://cpdm0p0rmd0" path="res://SPRITES/WORLD/Skytile.png" id="2_aqk2v"]
 [ext_resource type="PackedScene" uid="uid://bag1xjvpbi6k6" path="res://tilemap.tscn" id="2_fj7yv"]
+[ext_resource type="PackedScene" uid="uid://cufoc3bfr35j8" path="res://Coin.tscn" id="5_036b0"]
 
 [node name="World" type="Node2D"]
 
@@ -12,6 +13,8 @@ script = ExtResource("1_tlwt5")
 STATE = 1
 
 [node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+scale = Vector2(1.5, 1.5)
+transform = Transform2D(1.5, 0, 0, 1.5, 0, 0)
 
 [node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
 motion_scale = Vector2(0.5, 0.5)
@@ -27,3 +30,16 @@ position = Vector2(0, 1000)
 scale = Vector2(0.75, 0.75)
 
 [node name="Player" parent="." instance=ExtResource("1_f3sb7")]
+
+[node name="CharacterBody2D" parent="Player" index="0"]
+slide = 0.06
+
+[node name="Coin" parent="." instance=ExtResource("5_036b0")]
+position = Vector2(376, 300)
+scale = Vector2(0.25, 0.25)
+
+[node name="AnimatedSprite2D" parent="Coin/Area2D" index="0"]
+frame_progress = 0.595992
+
+[editable path="Player"]
+[editable path="Coin"]

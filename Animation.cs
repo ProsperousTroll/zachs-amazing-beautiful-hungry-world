@@ -39,8 +39,8 @@ public partial class Animation : AnimatedSprite2D
 		
 		FlipH = lookDir();
 
-		// Lean in direction you're moving. Holy magic numbers.  
-		RotationDegrees = Mathf.Lerp(Globals.inDir(), Char.Velocity.X / 60F, 0.3F);
+		// Lean in movement direction. Holy magic numbers.  
+		RotationDegrees = Mathf.Lerp(Globals.inDir(), Char.Velocity.X / 65F, 0.5F);
 		
 		switch(Globals.STATE)
 		{

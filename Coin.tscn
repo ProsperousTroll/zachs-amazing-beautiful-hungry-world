@@ -1,0 +1,59 @@
+[gd_scene load_steps=11 format=3 uid="uid://cufoc3bfr35j8"]
+
+[ext_resource type="Texture2D" uid="uid://df4v15dvgqn1e" path="res://SPRITES/COLLECTABLES/COIN/coinCol1.png" id="1_lvgfy"]
+[ext_resource type="Script" uid="uid://c51irr8pl0g3u" path="res://Coin.cs" id="1_tkog7"]
+[ext_resource type="Texture2D" uid="uid://ljs6olcl520s" path="res://SPRITES/COLLECTABLES/COIN/coinCol2.png" id="2_tkog7"]
+[ext_resource type="Texture2D" uid="uid://3whjp31pf42e" path="res://SPRITES/COLLECTABLES/COIN/coinCol3.png" id="3_m7ulc"]
+[ext_resource type="Texture2D" uid="uid://cbgochhu0aisv" path="res://SPRITES/COLLECTABLES/COIN/coin1.png" id="4_vjcl1"]
+[ext_resource type="Texture2D" uid="uid://b5c1u8h2wf2o7" path="res://SPRITES/COLLECTABLES/COIN/coin2.png" id="5_xe4v2"]
+[ext_resource type="Texture2D" uid="uid://cg75jwd15dsby" path="res://SPRITES/COLLECTABLES/COIN/coin3.png" id="6_esark"]
+[ext_resource type="Texture2D" uid="uid://dyitbot160wj2" path="res://SPRITES/COLLECTABLES/COIN/coin4.png" id="7_5xfxd"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_eys37"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_lvgfy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_tkog7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_m7ulc")
+}],
+"loop": false,
+"name": &"COLLECTED",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_vjcl1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_xe4v2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_esark")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_5xfxd")
+}],
+"loop": true,
+"name": &"SPIN",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6wppn"]
+
+[node name="Coin" type="Node2D"]
+
+[node name="Area2D" type="Area2D" parent="."]
+script = ExtResource("1_tkog7")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Area2D"]
+sprite_frames = SubResource("SpriteFrames_eys37")
+animation = &"COLLECTED"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+scale = Vector2(9.85, 9.85)
+shape = SubResource("CircleShape2D_6wppn")

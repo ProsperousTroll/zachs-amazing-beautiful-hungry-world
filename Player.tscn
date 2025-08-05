@@ -179,6 +179,7 @@ gravity = 2000.0
 accel = 0.15
 jumpPower = -850.0
 drag = 0.02
+slide = 0.05
 plipHeight = 1.8
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D"]

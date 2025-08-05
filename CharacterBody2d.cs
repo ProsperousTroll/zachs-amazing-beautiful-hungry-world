@@ -3,8 +3,11 @@ using System;
 
 public partial class CharacterBody2d : CharacterBody2D
 {
-	
-	// General movement 
+	/////////////////
+	/// VARIABLES /// 
+	/////////////////
+
+	// Public properties 
 	[Export]
 	public float gravity = 1800;
 	[Export]
@@ -17,14 +20,12 @@ public partial class CharacterBody2d : CharacterBody2D
 	public float jumpPower = -800;
 	[Export]
 	public float drag = 0.005F;
-	
-	// Multipliers for special 'crump' move
+	[Export]
+	public float slide = 0.025F;
 	[Export]
 	public float crumpSpeed = 1.8F;
 	[Export]
 	public float crumpHeight = 0.5F;
-	
-	// Multipliers for special 'plip' move
 	[Export]
 	public float plipSpeed = 0.5F;
 	[Export]
@@ -34,6 +35,10 @@ public partial class CharacterBody2d : CharacterBody2D
 	private Vector2 vel = Vector2.Zero;
 	private Vector2 multipliers = Vector2.Zero;
 	private Globals Globals;
+	
+	/////////////////
+	/// FUNCTIONS ///
+	/////////////////
 	
 	private void Multipliers()
 	{
@@ -56,7 +61,6 @@ public partial class CharacterBody2d : CharacterBody2D
 			drag = 0.02F;
 		} 
 	}
-	
 
 	private void playerStates()
 	{
@@ -106,17 +110,17 @@ public partial class CharacterBody2d : CharacterBody2D
 	
 	public override void _PhysicsProcess(double delta)
 	{
+		// This order matters
 		playerStates();
 		Multipliers();
 
-		GD.Print(Globals.STATE);
-		
 		// Fix fast fall bug. Wouldn't want this here normally. 
 		if (IsOnFloor())
 		{
 			vel.Y = 0;
 		}
 
+		// Jump
 		if (Input.IsActionJustPressed("Jump"))
 		{
 			if (IsOnFloor())
@@ -143,17 +147,23 @@ public partial class CharacterBody2d : CharacterBody2D
 				}
 				// I thought the engine would do this for me ^
 				vel.Y += gravity * (float)delta;
-				vel.Y = Math.Clamp(vel.Y, -gravity, gravity);
 				vel.X = Mathf.Lerp(vel.X, Globals.inDir() * (speed * multipliers.X), drag);
+				vel.Y = Math.Clamp(vel.Y, -gravity, gravity);
 				break; 
 			case Globals.PLRSTATES.CRUMP:
-				vel.X = Mathf.Lerp(vel.X, 0.0F, friction);
+				vel.X = Mathf.Lerp(vel.X, 0.0F, slide);
 				break;
 			case Globals.PLRSTATES.PLIP:
-				vel.X = Mathf.Lerp(vel.X, 0.0F, friction);
+				vel.X = Mathf.Lerp(vel.X, 0.0F, slide);
 				break;
  		}
-		
+
+		// Fix arial momentum bug, prevents from gettings stuck on walls in the air.
+		if(Velocity.X == 0 && Globals.inDir() == 0)
+		{
+			vel.X = 0;
+		}	
+
 		Velocity = vel;
 		MoveAndSlide();
 	}
